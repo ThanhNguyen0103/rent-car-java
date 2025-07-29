@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleInvalidException(Exception ex) {
         ApiResponse<Object> res = new ApiResponse<>();
         res.setMessage(ex.getMessage());
-        res.setError("đã có lỗi xảy ra ...");
+        res.setError("Conflict ...");
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         return ResponseEntity.status(res.getStatusCode()).body(res);
     }

@@ -5,16 +5,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
+import com.example.rentCar.utils.annotation.ApiMessage;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+@ControllerAdvice
 public class FomatApiResponse implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'supports'");
+        return true;
     }
 
     @Override
@@ -24,7 +28,9 @@ public class FomatApiResponse implements ResponseBodyAdvice<Object> {
             ServerHttpResponse response) {
 
         ApiResponse<Object> res = new ApiResponse<>();
-        int status = ((HttpServletResponse) response).getStatus();
+
+        ApiMessage message = returnType.getMethod().getAnnotation(ApiMessage.class);
+        int status = ((ServletServerHttpResponse) response).getServletResponse().getStatus();
 
         // success
 
@@ -32,7 +38,7 @@ public class FomatApiResponse implements ResponseBodyAdvice<Object> {
             return body;
         } else {
             res.setData(body);
-            res.setMessage("thành công ");
+            res.setMessage(message != null ? message.value() : "");
             res.setStatusCode(status);
         }
         // error
