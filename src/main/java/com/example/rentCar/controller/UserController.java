@@ -10,6 +10,7 @@ import com.example.rentCar.utils.annotation.ApiMessage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,15 +24,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/api/v1")
 public class UserController {
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/users")
     @ApiMessage("Create User success")
     public ResponseEntity<User> postCreateUser(@RequestBody User user) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.handleCreateUser(user));
+        User res = this.userService.handleCreateUser(user);
+        String pw = passwordEncoder.encode(res.getPassword());
+        res.setPassword(pw);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.handleSaveUser(res));
 
     }
 

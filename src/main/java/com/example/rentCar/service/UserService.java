@@ -1,10 +1,10 @@
 package com.example.rentCar.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.rentCar.domain.User;
@@ -14,7 +14,7 @@ import com.example.rentCar.utils.error.InvalidException;
 
 @Service
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -32,8 +32,11 @@ public class UserService {
         res.setGender(user.getGender());
         res.setAvatar(user.getAvatar());
         res.setPassword(user.getPassword());
-        return this.userRepository.save(res);
+        return res;
+    }
 
+    public User handleSaveUser(User user) {
+        return this.userRepository.save(user);
     }
 
     public User handleUpdateUser(User user) {
@@ -87,6 +90,14 @@ public class UserService {
         result.setResult(pages.getContent());
         result.setMeta(meta);
         return result;
+    }
+
+    public User getUserByEmail(String email) {
+        User user = this.userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("");
+        }
+        return user;
     }
 
 }
