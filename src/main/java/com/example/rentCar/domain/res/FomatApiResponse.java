@@ -31,6 +31,10 @@ public class FomatApiResponse implements ResponseBodyAdvice<Object> {
 
         ApiMessage message = returnType.getMethod().getAnnotation(ApiMessage.class);
         int status = ((ServletServerHttpResponse) response).getServletResponse().getStatus();
+        ///////
+        if (body instanceof String) {
+            return body;
+        }
 
         // success
 
