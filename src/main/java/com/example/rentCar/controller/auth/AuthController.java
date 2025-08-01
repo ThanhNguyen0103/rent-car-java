@@ -12,14 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.rentCar.domain.req.UserLoginDTO;
 import com.example.rentCar.domain.res.ResLogin;
+import com.example.rentCar.utils.service.SecurityUtils;
 
 @RestController
 @RequestMapping("/api/v1")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
+    private final SecurityUtils securityUtils;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(AuthenticationManager authenticationManager, SecurityUtils securityUtils) {
         this.authenticationManager = authenticationManager;
+        this.securityUtils = securityUtils;
     }
 
     @PostMapping("/auth/login")
@@ -28,6 +31,8 @@ public class AuthController {
                 user.getPassword());
         Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
         SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
+        String abc = this.securityUtils.generateJwt();
+
         return ResponseEntity.ok().body(null);
     }
 }
