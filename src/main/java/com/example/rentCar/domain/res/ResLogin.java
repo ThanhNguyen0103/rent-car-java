@@ -21,7 +21,5 @@ public class ResLogin {
         private long id;
         private String email;
         private String fullName;
-        private String age;
-        private String address;
     }
 }

@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.server.resource.web.access.BearerToke
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.example.rentCar.service.CustomUserDetailsService;
-import com.example.rentCar.service.UserService;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -29,10 +28,11 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public CustomUserDetailsService customUserDetailsService(UserService userService) {
-        return new CustomUserDetailsService(userService);
-    }
+    // @Bean
+    // public CustomUserDetailsService customUserDetailsService(UserService
+    // userService) {
+    // return new CustomUserDetailsService(userService);
+    // }
 
     @Bean
     public DaoAuthenticationProvider authProvider(
@@ -69,8 +69,8 @@ public class SecurityConfiguration {
                         .authenticated())
                 // .anyRequest().permitAll())
                 // -------------- //
-                // .oauth2ResourceServer(oauth2 -> oauth2
-                // .jwt(Customizer.withDefaults()))
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(Customizer.withDefaults()))
                 // --------//
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
