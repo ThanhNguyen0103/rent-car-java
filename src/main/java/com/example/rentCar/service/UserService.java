@@ -30,6 +30,7 @@ public class UserService {
         res.setAge(user.getAge());
         res.setFullName(user.getFullName());
         res.setGender(user.getGender());
+        res.setAddress(user.getAddress());
         res.setAvatar(user.getAvatar());
         res.setPassword(user.getPassword());
         return res;
@@ -96,6 +97,19 @@ public class UserService {
         User user = this.userRepository.findByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("");
+        }
+        return user;
+    }
+
+    public User handleSaveRefreshToken(String refreshToken, User user) {
+        user.setRefreshToken(refreshToken);
+        return this.userRepository.save(user);
+    }
+
+    public User getUserByEmailAndRefreshToken(String email, String token) {
+        User user = this.userRepository.findByEmailAndRefreshToken(email, token);
+        if (user == null) {
+            throw new InvalidException("User không tồn tại");
         }
         return user;
     }

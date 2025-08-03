@@ -36,6 +36,7 @@ public class User {
     private String avatar;
     @Enumerated(EnumType.STRING)
     private GenderEnum gender;
+    private String refreshToken;
 
     private Instant createdAt;
     private Instant updatedAt;
