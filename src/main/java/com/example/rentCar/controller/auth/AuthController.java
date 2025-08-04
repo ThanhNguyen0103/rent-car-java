@@ -17,140 +17,157 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.rentCar.domain.Role;
 import com.example.rentCar.domain.User;
 import com.example.rentCar.domain.req.UserLoginDTO;
 import com.example.rentCar.domain.res.ResLogin;
+import com.example.rentCar.domain.res.ResLogin.ResRoleUser;
+import com.example.rentCar.service.RoleService;
 import com.example.rentCar.service.UserService;
 import com.example.rentCar.utils.SecurityUtils;
 import com.example.rentCar.utils.annotation.ApiMessage;
+import com.example.rentCar.utils.constant.RoleEnum;
 import com.example.rentCar.utils.constant.TokenType;
 
 @RestController
 @RequestMapping("/api/v1")
 public class AuthController {
-    @Value("${thanh.jwt.refreshToken-validity-in-seconds}")
-    private long expiresRefreshToken;
-    private final AuthenticationManager authenticationManager;
-    private final SecurityUtils securityUtils;
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+        @Value("${thanh.jwt.refreshToken-validity-in-seconds}")
+        private long expiresRefreshToken;
+        private final AuthenticationManager authenticationManager;
+        private final SecurityUtils securityUtils;
+        private final UserService userService;
+        private final PasswordEncoder passwordEncoder;
+        private final RoleService roleService;
 
-    public AuthController(AuthenticationManager authenticationManager, SecurityUtils securityUtils,
-            UserService userService, PasswordEncoder passwordEncoder) {
-        this.authenticationManager = authenticationManager;
-        this.securityUtils = securityUtils;
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-    }
+        public AuthController(AuthenticationManager authenticationManager, SecurityUtils securityUtils,
+                        UserService userService, PasswordEncoder passwordEncoder, RoleService roleService) {
+                this.authenticationManager = authenticationManager;
+                this.securityUtils = securityUtils;
+                this.userService = userService;
+                this.passwordEncoder = passwordEncoder;
+                this.roleService = roleService;
+        }
 
-    @PostMapping("/auth/login")
-    @ApiMessage("Login success")
-    public ResponseEntity<ResLogin> postLogin(@RequestBody UserLoginDTO user) {
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(
-                user.getUsername(),
-                user.getPassword());
-        Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
-        SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
+        @PostMapping("/auth/login")
+        @ApiMessage("Login success")
+        public ResponseEntity<ResLogin> postLogin(@RequestBody UserLoginDTO user) {
+                Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(
+                                user.getUsername(),
+                                user.getPassword());
+                Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
+                SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
 
-        User currentUser = this.userService.getUserByEmail(user.getUsername());
+                User currentUser = this.userService.getUserByEmail(user.getUsername());
 
-        ResLogin.ResUserLogin userLogin = new ResLogin.ResUserLogin(
-                currentUser.getId(), currentUser.getEmail(),
-                currentUser.getFullName());
+                ResLogin.ResRoleUser roleUser = new ResLogin.ResRoleUser();
+                roleUser.setName(currentUser.getRole().getName());
 
-        String accessToken = this.securityUtils.generateJwt(userLogin, TokenType.ACCESS);
-        String refreshToken = this.securityUtils.generateJwt(userLogin, TokenType.REFRESH);
+                ResLogin.ResUserLogin userLogin = new ResLogin.ResUserLogin(
+                                currentUser.getId(), currentUser.getEmail(),
+                                currentUser.getFullName(), roleUser);
 
-        this.userService.handleSaveRefreshToken(refreshToken, currentUser);
-        ResLogin res = new ResLogin(accessToken, userLogin);
+                String accessToken = this.securityUtils.generateJwt(userLogin, TokenType.ACCESS);
+                String refreshToken = this.securityUtils.generateJwt(userLogin, TokenType.REFRESH);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(expiresRefreshToken)
-                .build();
+                this.userService.handleSaveRefreshToken(refreshToken, currentUser);
+                ResLogin res = new ResLogin(accessToken, userLogin);
 
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(res);
-    }
+                ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                                .httpOnly(true)
+                                .secure(true)
+                                .path("/")
+                                .maxAge(expiresRefreshToken)
+                                .build();
 
-    @GetMapping("/auth/refresh")
-    @ApiMessage("refresh success")
-    public ResponseEntity<ResLogin> getRefresh(@CookieValue("refreshToken") String refreshToken) {
+                return ResponseEntity
+                                .ok()
+                                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                                .body(res);
+        }
 
-        String email = this.securityUtils.extractSubjectFromValidRefreshToken(refreshToken);
-        User currentUser = this.userService.getUserByEmailAndRefreshToken(email, refreshToken);
+        @GetMapping("/auth/refresh")
+        @ApiMessage("refresh success")
+        public ResponseEntity<ResLogin> getRefresh(@CookieValue("refreshToken") String refreshToken) {
 
-        ResLogin.ResUserLogin userLogin = new ResLogin.ResUserLogin(
-                currentUser.getId(), currentUser.getEmail(),
-                currentUser.getFullName());
+                String email = this.securityUtils.extractSubjectFromValidRefreshToken(refreshToken);
+                User currentUser = this.userService.getUserByEmailAndRefreshToken(email, refreshToken);
 
-        String accessToken = this.securityUtils.generateJwt(userLogin, TokenType.ACCESS);
-        String newRefreshToken = this.securityUtils.generateJwt(userLogin, TokenType.REFRESH);
+                ResLogin.ResRoleUser roleUser = new ResLogin.ResRoleUser();
+                roleUser.setName(currentUser.getRole().getName());
 
-        this.userService.handleSaveRefreshToken(newRefreshToken, currentUser);
-        ResLogin res = new ResLogin(accessToken, userLogin);
+                ResLogin.ResUserLogin userLogin = new ResLogin.ResUserLogin(
+                                currentUser.getId(), currentUser.getEmail(),
+                                currentUser.getFullName(), roleUser);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(expiresRefreshToken)
-                .build();
+                String accessToken = this.securityUtils.generateJwt(userLogin, TokenType.ACCESS);
+                String newRefreshToken = this.securityUtils.generateJwt(userLogin, TokenType.REFRESH);
 
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(res);
-    }
+                this.userService.handleSaveRefreshToken(newRefreshToken, currentUser);
+                ResLogin res = new ResLogin(accessToken, userLogin);
 
-    @GetMapping("/auth/account")
-    @ApiMessage("Get account success")
-    public ResponseEntity<ResLogin.ResUserLogin> getAccount() {
-        String email = SecurityUtils.getCurrentUserLogin() != null
-                ? SecurityUtils.getCurrentUserLogin().get()
-                : "";
-        User currentUser = this.userService.getUserByEmail(email);
-        ResLogin.ResUserLogin userLogin = new ResLogin.ResUserLogin(
-                currentUser.getId(), currentUser.getEmail(),
-                currentUser.getFullName());
-        return ResponseEntity.ok().body(userLogin);
-    }
+                ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                                .httpOnly(true)
+                                .secure(true)
+                                .path("/")
+                                .maxAge(expiresRefreshToken)
+                                .build();
 
-    @GetMapping("/auth/logout")
-    @ApiMessage("Logout success")
-    public ResponseEntity<Void> postLogout() {
-        String email = SecurityUtils.getCurrentUserLogin() != null
-                ? SecurityUtils.getCurrentUserLogin().get()
-                : "";
-        User currentUser = this.userService.getUserByEmail(email);
-        this.userService.handleSaveRefreshToken(null, currentUser);
-        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(0)
-                .build();
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body(null);
-    }
+                return ResponseEntity
+                                .ok()
+                                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                                .body(res);
+        }
 
-    @PostMapping("/register")
-    @ApiMessage("Register success")
-    public ResponseEntity<ResLogin.ResUserLogin> postRegister(@RequestBody User user) {
-        User currentUser = this.userService.handleCreateUser(user);
-        String pw = passwordEncoder.encode(currentUser.getPassword());
-        currentUser.setPassword(pw);
-        this.userService.handleSaveUser(currentUser);
-        ResLogin.ResUserLogin res = new ResLogin.ResUserLogin(
-                currentUser.getId(), currentUser.getEmail(),
-                currentUser.getFullName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(res);
-    }
+        @GetMapping("/auth/account")
+        @ApiMessage("Get account success")
+        public ResponseEntity<ResLogin.ResUserLogin> getAccount() {
+                String email = SecurityUtils.getCurrentUserLogin() != null
+                                ? SecurityUtils.getCurrentUserLogin().get()
+                                : "";
+                User currentUser = this.userService.getUserByEmail(email);
+                ResLogin.ResRoleUser roleUser = new ResLogin.ResRoleUser();
+                roleUser.setName(currentUser.getRole().getName());
+
+                ResLogin.ResUserLogin userLogin = new ResLogin.ResUserLogin(
+                                currentUser.getId(), currentUser.getEmail(),
+                                currentUser.getFullName(), roleUser);
+                return ResponseEntity.ok().body(userLogin);
+        }
+
+        @GetMapping("/auth/logout")
+        @ApiMessage("Logout success")
+        public ResponseEntity<Void> postLogout() {
+                String email = SecurityUtils.getCurrentUserLogin() != null
+                                ? SecurityUtils.getCurrentUserLogin().get()
+                                : "";
+                User currentUser = this.userService.getUserByEmail(email);
+                this.userService.handleSaveRefreshToken(null, currentUser);
+                ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
+                                .httpOnly(true)
+                                .secure(true)
+                                .path("/")
+                                .maxAge(0)
+                                .build();
+                return ResponseEntity
+                                .ok()
+                                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                                .body(null);
+        }
+
+        @PostMapping("/register")
+        @ApiMessage("Register success")
+        public ResponseEntity<ResLogin.ResUserLogin> postRegister(@RequestBody User user) {
+                User currentUser = this.userService.handleCreateUser(user);
+                String pw = passwordEncoder.encode(currentUser.getPassword());
+                currentUser.setPassword(pw);
+                Role role = this.roleService.getRoleByName(RoleEnum.ROLE_USER);
+                currentUser.setRole(role);
+                this.userService.handleSaveUser(currentUser);
+                ResLogin.ResUserLogin res = new ResLogin.ResUserLogin(
+                                currentUser.getId(), currentUser.getEmail(),
+                                currentUser.getFullName(), new ResRoleUser(RoleEnum.ROLE_USER));
+                return ResponseEntity.status(HttpStatus.CREATED).body(res);
+        }
 
 }

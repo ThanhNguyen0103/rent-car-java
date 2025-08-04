@@ -1,10 +1,9 @@
 package com.example.rentCar.domain;
 
 import java.time.Instant;
-import java.util.List;
 
 import com.example.rentCar.utils.SecurityUtils;
-import com.example.rentCar.utils.constant.GenderEnum;
+import com.example.rentCar.utils.constant.RentalStatusEnum;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -24,24 +22,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "rentals")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class User {
+public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String email;
-    private String fullName;
-    private String password;
-    private int age;
-    private String address;
-    private String avatar;
     @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-    private String refreshToken;
+    private RentalStatusEnum status;
+    private Instant startDate;
+    private Instant endDate;
+    private double totalPrice;
+
+    private String pickupLocation;
+    private String dropoffLocation;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -49,10 +46,12 @@ public class User {
     private String updatedBy;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
-    @OneToMany(mappedBy = "user")
-    private List<Rental> rentals;
+    @JoinColumn(name = "car_id")
+    private Car car;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @PrePersist
     public void onCreate() {
@@ -69,5 +68,4 @@ public class User {
                 ? SecurityUtils.getCurrentUserLogin().get()
                 : null;
     }
-
 }

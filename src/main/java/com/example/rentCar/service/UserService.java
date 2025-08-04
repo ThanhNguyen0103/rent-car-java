@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.rentCar.domain.Role;
 import com.example.rentCar.domain.User;
 import com.example.rentCar.domain.res.ResultPaginationDTO;
 import com.example.rentCar.repository.UserRepository;
@@ -15,9 +16,12 @@ import com.example.rentCar.utils.error.InvalidException;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final RoleService roleService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+            RoleService roleService) {
         this.userRepository = userRepository;
+        this.roleService = roleService;
     }
 
     public User handleCreateUser(User user) {
@@ -33,6 +37,10 @@ public class UserService {
         res.setAddress(user.getAddress());
         res.setAvatar(user.getAvatar());
         res.setPassword(user.getPassword());
+        if (user.getRole() != null) {
+            Role role = this.roleService.getRoleById(user.getRole().getId());
+            res.setRole(role);
+        }
         return res;
     }
 
@@ -48,7 +56,10 @@ public class UserService {
             res.setFullName(user.getFullName());
             res.setGender(user.getGender());
             // res.setPassword(user.getPassword());
-
+            if (user.getRole() != null) {
+                Role role = this.roleService.getRoleById(user.getRole().getId());
+                res.setRole(role);
+            }
             return this.userRepository.save(res);
         } else {
             throw new InvalidException("User không tồn tại..");

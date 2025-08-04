@@ -50,7 +50,8 @@ public class SecurityUtils {
                 .expiresAt(validity)
                 .subject(user.getEmail());
         if (type == TokenType.ACCESS) {
-            claimsBuilder.claim("user", user);
+            claimsBuilder.claim("user", user.getFullName());
+            claimsBuilder.claim("authorities", user.getRole());
         } else {
             claimsBuilder.claim("type", "refresh");
         }

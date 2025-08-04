@@ -1,5 +1,7 @@
 package com.example.rentCar.domain.res;
 
+import com.example.rentCar.utils.constant.RoleEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,5 +23,15 @@ public class ResLogin {
         private long id;
         private String email;
         private String fullName;
+        private ResRoleUser role;
+    }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ResRoleUser {
+        private RoleEnum name;
+
     }
 }
