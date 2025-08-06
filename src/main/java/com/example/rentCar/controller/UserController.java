@@ -64,7 +64,6 @@ public class UserController {
     @GetMapping("/users")
     @ApiMessage("Get user with pagination success")
     public ResponseEntity<ResultPaginationDTO> getAllUserMethod(Pageable pageable) {
-
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.getUserWithPagination(pageable));
     }
 

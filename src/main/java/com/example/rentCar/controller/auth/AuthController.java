@@ -158,12 +158,14 @@ public class AuthController {
         @PostMapping("/register")
         @ApiMessage("Register success")
         public ResponseEntity<ResLogin.ResUserLogin> postRegister(@RequestBody User user) {
+
                 User currentUser = this.userService.handleCreateUser(user);
                 String pw = passwordEncoder.encode(currentUser.getPassword());
                 currentUser.setPassword(pw);
                 Role role = this.roleService.getRoleByName(RoleEnum.ROLE_USER);
                 currentUser.setRole(role);
                 this.userService.handleSaveUser(currentUser);
+
                 ResLogin.ResUserLogin res = new ResLogin.ResUserLogin(
                                 currentUser.getId(), currentUser.getEmail(),
                                 currentUser.getFullName(), new ResRoleUser(RoleEnum.ROLE_USER));

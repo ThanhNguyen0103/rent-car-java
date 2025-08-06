@@ -2,6 +2,8 @@ package com.example.rentCar.domain;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,6 +26,9 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
+
     @OneToMany(mappedBy = "brand")
-    private List<Car> cars;
+    @JsonIgnore
+    private List<CarModel> carModels;
+
 }

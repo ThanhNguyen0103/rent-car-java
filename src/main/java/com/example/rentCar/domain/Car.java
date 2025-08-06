@@ -2,6 +2,9 @@ package com.example.rentCar.domain;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,13 +29,16 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String capacity;
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
     private boolean available;
     private double price;
 
-    @ManyToOne
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
     @OneToMany(mappedBy = "car")
+    @JsonIgnore
     private List<CarImage> carImages;
+
+    @ManyToOne
+    @JoinColumn(name = "car_model_id")
+    private CarModel carModel;
 }

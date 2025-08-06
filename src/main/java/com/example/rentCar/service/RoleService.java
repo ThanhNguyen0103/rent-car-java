@@ -44,21 +44,20 @@ public class RoleService {
     }
 
     public Role handleUpdateRole(Role role) {
+        Optional<Role> rOptional = this.roleRepository.findById(role.getId());
+        if (rOptional.isEmpty()) {
+            throw new InvalidException("Role không tồn tại");
+        }
+        Role res = rOptional.get();
         boolean existsName = this.roleRepository.existsByName(role.getName());
-        if (existsName) {
+
+        if (existsName && !res.getName().equals(role.getName())) {
             throw new InvalidException("Role name đã tồn tại");
         }
-
-        Optional<Role> rOptional = this.roleRepository.findById(role.getId());
-
-        if (rOptional.isPresent()) {
-            Role res = rOptional.get();
-            res.setActive(role.isActive());
-            res.setDescription(role.getDescription());
-            res.setName(role.getName());
-            return this.handleSaveRole(res);
-        }
-        return null;
+        res.setActive(role.isActive());
+        res.setDescription(role.getDescription());
+        res.setName(role.getName());
+        return this.handleSaveRole(res);
     }
 
     public void handleDeleteRole(long id) {
