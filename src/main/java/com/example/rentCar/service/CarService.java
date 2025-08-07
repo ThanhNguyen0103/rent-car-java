@@ -4,10 +4,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.rentCar.domain.Role;
 import com.example.rentCar.domain.res.ResultPaginationDTO;
-import com.example.rentCar.domain.Brand;
+
 import com.example.rentCar.domain.Car;
+
 import com.example.rentCar.domain.CarModel;
 import com.example.rentCar.repository.CarRepository;
 import com.example.rentCar.utils.error.InvalidException;
@@ -20,6 +20,7 @@ public class CarService {
     public CarService(CarRepository carRepository, CarModelService carModelService) {
         this.carRepository = carRepository;
         this.carModelService = carModelService;
+
     }
 
     public Car handleCreateCar(Car car) {
@@ -35,10 +36,10 @@ public class CarService {
         //
         // res.getCarImages()
 
-        return this.carRepository.save(res);
+        return res;
     }
 
-    public Car handleSaveBrand(Car car) {
+    public Car handleSaveCar(Car car) {
         return this.carRepository.save(car);
     }
 
@@ -56,12 +57,13 @@ public class CarService {
         existing.setAvailable(car.isAvailable());
         existing.setPrice(car.getPrice());
 
-        return carRepository.save(existing);
+        return existing;
     }
 
     public void deleteCar(Long id) {
         Car car = carRepository.findById(id)
                 .orElseThrow(() -> new InvalidException("Car không tồn tại"));
+
         this.carRepository.delete(car);
     }
 
@@ -70,7 +72,7 @@ public class CarService {
                 .orElseThrow(() -> new InvalidException("Car không tồn tại"));
     }
 
-    public ResultPaginationDTO getBrandWithPagination(Pageable pageable) {
+    public ResultPaginationDTO getCarWithPagination(Pageable pageable) {
 
         Page<Car> pages = this.carRepository.findAll(pageable);
 

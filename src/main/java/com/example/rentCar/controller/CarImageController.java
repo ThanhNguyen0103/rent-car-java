@@ -22,12 +22,4 @@ public class CarImageController {
         this.carImageService = carImageService;
     }
 
-    @PostMapping("/upload")
-    @ApiMessage("Upload car image success")
-    public ResponseEntity<CarImage> uploadCarImage(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("folder") String folder) throws URISyntaxException, IOException {
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
-    }
 }

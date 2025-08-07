@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.rentCar.domain.Car;
@@ -53,6 +54,16 @@ public class CarImageService {
         carImage.setCar(car);
 
         return this.carImageRepository.save(carImage);
+    }
+
+    @Transactional
+    public void deleteAllCarImg(long id) {
+        this.carImageRepository.deleteAllByCarId(id);
+    }
+
+    @Transactional
+    public void deleteCarImg(long id) {
+        this.carImageRepository.deleteById(id);
     }
 
 }

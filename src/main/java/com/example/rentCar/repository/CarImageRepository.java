@@ -7,5 +7,5 @@ import com.example.rentCar.domain.CarImage;
 
 @Repository
 public interface CarImageRepository extends JpaRepository<CarImage, Long> {
-
+    void deleteAllByCarId(long id);
 }
