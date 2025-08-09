@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.rentCar.utils.SecurityUtils;
 import com.example.rentCar.utils.constant.GenderEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,6 +55,7 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Rental> rentals;
 
     @PrePersist

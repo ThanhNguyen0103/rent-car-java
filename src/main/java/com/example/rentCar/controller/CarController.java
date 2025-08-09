@@ -100,7 +100,7 @@ public class CarController {
 
     @DeleteMapping("/cars/{id}")
     @ApiMessage("Delete car success")
-    public ResponseEntity<Void> deleteBrand(@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteCar(@PathVariable("id") long id) {
         this.carService.deleteCar(id);
         return ResponseEntity.ok().body(null);
     }
@@ -113,7 +113,7 @@ public class CarController {
 
     @GetMapping("/cars")
     @ApiMessage("Get cars with pagination success")
-    public ResponseEntity<ResultPaginationDTO> getAllBrand(Pageable pageable) {
+    public ResponseEntity<ResultPaginationDTO> getAllCar(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(this.carService.getCarWithPagination(pageable));
     }
 

@@ -6,6 +6,7 @@ import com.example.rentCar.domain.User;
 import com.example.rentCar.domain.res.ResultPaginationDTO;
 import com.example.rentCar.service.UserService;
 import com.example.rentCar.utils.annotation.ApiMessage;
+import com.example.rentCar.utils.error.InvalidException;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -57,8 +58,8 @@ public class UserController {
     @GetMapping("/users/{id}")
     @ApiMessage("Get user success")
     public ResponseEntity<User> getMethodName(@PathVariable("id") long id) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(this.userService.getUserById(id));
+        User res = this.userService.getUserById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
     @GetMapping("/users")

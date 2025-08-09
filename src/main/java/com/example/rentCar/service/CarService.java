@@ -29,14 +29,14 @@ public class CarService {
         CarModel carModel = this.carModelService.getCarModelById(car.getCarModel().getId());
         Car res = new Car();
         res.setAvailable(true);
-        res.setCapacity("16");
+        res.setCapacity(car.getCapacity());
         res.setCarModel(carModel);
         res.setDescription(car.getDescription());
         res.setPrice(car.getPrice());
         //
         // res.getCarImages()
 
-        return res;
+        return this.carRepository.save(res);
     }
 
     public Car handleSaveCar(Car car) {
@@ -44,6 +44,7 @@ public class CarService {
     }
 
     public Car handleUpdateCar(Car car) {
+
         Car existing = carRepository.findById(car.getId())
                 .orElseThrow(() -> new InvalidException("Car không tồn tại"));
 

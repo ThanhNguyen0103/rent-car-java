@@ -78,13 +78,8 @@ public class UserService {
     }
 
     public User getUserById(long id) {
-        Optional<User> userOptional = this.userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            User res = userOptional.get();
-            return res;
-        } else {
-            throw new InvalidException("User không tồn tại..");
-        }
+        return this.userRepository.findById(id)
+                .orElseThrow(() -> new InvalidException("User không tồn tại"));
     }
 
     public ResultPaginationDTO getUserWithPagination(Pageable pageable) {
