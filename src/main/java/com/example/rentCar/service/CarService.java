@@ -28,7 +28,7 @@ public class CarService {
             throw new InvalidException("CarModel không được để trống");
         CarModel carModel = this.carModelService.getCarModelById(car.getCarModel().getId());
         Car res = new Car();
-        res.setAvailable(true);
+        res.setAvailable(car.isAvailable());
         res.setCapacity(car.getCapacity());
         res.setCarModel(carModel);
         res.setDescription(car.getDescription());

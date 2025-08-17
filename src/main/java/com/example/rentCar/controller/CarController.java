@@ -63,7 +63,7 @@ public class CarController {
         }
 
         res.setCarImages(carImages);
-        this.carService.handleSaveCar(res);
+        // this.carService.handleSaveCar(res);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
@@ -80,7 +80,7 @@ public class CarController {
         Car res = this.carService.handleUpdateCar(car);
         List<CarImage> carImages = new ArrayList<>();
         if (files != null && !files.isEmpty()) {
-            this.carImageService.deleteAllCarImg(res.getId());
+            this.carImageService.deleteAllCarImg(res.getId()); // xóa images theo car_id
             carImages = files.stream()
                     .map(file -> {
                         try {

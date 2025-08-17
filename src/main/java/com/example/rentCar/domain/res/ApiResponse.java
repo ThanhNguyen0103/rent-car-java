@@ -10,9 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApiResponse<T> {
-    private String message;
+    private Object message;
     private int statusCode;
-    private String error;
+    private Object error;
     private T data;
 
 }

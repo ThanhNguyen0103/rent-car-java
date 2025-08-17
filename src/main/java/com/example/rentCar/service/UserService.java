@@ -30,6 +30,7 @@ public class UserService {
         if (userExists) {
             throw new InvalidException("Email đã tồn tại ");
         }
+
         res.setEmail(user.getEmail());
         res.setAge(user.getAge());
         res.setFullName(user.getFullName());
@@ -85,7 +86,8 @@ public class UserService {
     public ResultPaginationDTO getUserWithPagination(Pageable pageable) {
 
         Page<User> pages = this.userRepository.findAll(pageable);
-
+        // Page<User> pages =
+        // this.userRepository.findAll(UserSpecs.isLongTermCustomer(), pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
         ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
 

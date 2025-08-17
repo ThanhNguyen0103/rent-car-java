@@ -6,7 +6,6 @@ import com.example.rentCar.domain.User;
 import com.example.rentCar.domain.res.ResultPaginationDTO;
 import com.example.rentCar.service.UserService;
 import com.example.rentCar.utils.annotation.ApiMessage;
-import com.example.rentCar.utils.error.InvalidException;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;

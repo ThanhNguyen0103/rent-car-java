@@ -23,62 +23,65 @@ import com.example.rentCar.service.CustomUserDetailsService;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder encoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    // @Bean
-    // public CustomUserDetailsService customUserDetailsService(UserService
-    // userService) {
-    // return new CustomUserDetailsService(userService);
-    // }
+        // @Bean
+        // public CustomUserDetailsService customUserDetailsService(UserService
+        // userService) {
+        // return new CustomUserDetailsService(userService);
+        // }
 
-    @Bean
-    public DaoAuthenticationProvider authProvider(
-            PasswordEncoder passwordEncoder,
-            CustomUserDetailsService customUserDetailsService) {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(customUserDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder);
-        return authProvider;
-    }
+        @Bean
+        public DaoAuthenticationProvider authProvider(
+                        PasswordEncoder passwordEncoder,
+                        CustomUserDetailsService customUserDetailsService) {
+                DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+                authProvider.setUserDetailsService(customUserDetailsService);
+                authProvider.setPasswordEncoder(passwordEncoder);
+                return authProvider;
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder,
-            CustomUserDetailsService customUserDetailsService) {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(customUserDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        @Bean
+        public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder,
+                        CustomUserDetailsService customUserDetailsService) {
+                DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+                authenticationProvider.setUserDetailsService(customUserDetailsService);
+                authenticationProvider.setPasswordEncoder(passwordEncoder);
 
-        ProviderManager providerManager = new ProviderManager(authenticationProvider);
-        providerManager.setEraseCredentialsAfterAuthentication(false);
+                ProviderManager providerManager = new ProviderManager(authenticationProvider);
+                providerManager.setEraseCredentialsAfterAuthentication(false);
 
-        return providerManager;
-    }
+                return providerManager;
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
 
-                // ------------///
-                .authorizeHttpRequests(req -> req
-                        .requestMatchers("/", "/api/v1/auth/login", "/api/v1/auth/refresh", "/api/v1/register")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated())
-                // .anyRequest().permitAll())
-                // -------------- //
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults()))
-                // --------//
-                .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
-                // --------//
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        return http.build();
-    }
+                                // ------------///
+                                .authorizeHttpRequests(req -> req
+                                                // .requestMatchers("/", "/api/v1/auth/login", "/api/v1/auth/refresh",
+                                                // "/api/v1/register",
+                                                // "/api/v1/users")
+                                                // .permitAll()
+                                                // .anyRequest()
+                                                // .authenticated())
+                                                .anyRequest().permitAll())
+                                // -------------- //
+                                .oauth2ResourceServer(oauth2 -> oauth2
+                                                .jwt(Customizer.withDefaults()))
+                                // --------//
+                                .exceptionHandling(exceptions -> exceptions
+                                                .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                                                .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+                                // --------//
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                return http.build();
+        }
 
 }
