@@ -58,7 +58,7 @@ public class CarService {
         existing.setAvailable(car.isAvailable());
         existing.setPrice(car.getPrice());
 
-        return existing;
+        return this.carRepository.save(existing);
     }
 
     public void deleteCar(Long id) {

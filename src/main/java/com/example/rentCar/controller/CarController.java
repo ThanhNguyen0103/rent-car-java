@@ -22,6 +22,7 @@ import com.example.rentCar.service.CarImageService;
 import com.example.rentCar.service.CarService;
 import com.example.rentCar.utils.annotation.ApiMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -76,11 +77,14 @@ public class CarController {
 
         ObjectMapper mapper = new ObjectMapper();
         Car car = mapper.readValue(carJson, Car.class);
-
         Car res = this.carService.handleUpdateCar(car);
+
+        if (car.getCarImages() != null && !car.getCarImages().isEmpty()) {
+            List<Long> idCarImages = car.getCarImages().stream().map(item -> item.getId()).collect(Collectors.toList());
+            this.carImageService.handleDeleteImg(idCarImages, car.getId());
+        }
         List<CarImage> carImages = new ArrayList<>();
         if (files != null && !files.isEmpty()) {
-            this.carImageService.deleteAllCarImg(res.getId()); // xóa images theo car_id
             carImages = files.stream()
                     .map(file -> {
                         try {
@@ -93,7 +97,7 @@ public class CarController {
         }
 
         res.setCarImages(carImages);
-        this.carService.handleSaveCar(res);
+        // this.carService.handleSaveCar(res);
 
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }

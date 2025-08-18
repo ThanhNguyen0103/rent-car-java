@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -64,6 +65,16 @@ public class CarImageService {
     @Transactional
     public void deleteCarImg(long id) {
         this.carImageRepository.deleteById(id);
+    }
+
+    public void handleDeleteImg(List<Long> ids, long id) {
+
+        List<CarImage> list = this.carImageRepository.findAllByCarId(id);
+        List<CarImage> toDelete = list.stream()
+                .filter(item -> !ids.contains(item.getId()))
+                .toList();
+        this.carImageRepository.deleteAll(toDelete);
+
     }
 
 }
