@@ -12,8 +12,6 @@ import com.example.rentCar.domain.res.ResultPaginationDTO;
 import com.example.rentCar.repository.CarModelRepository;
 import com.example.rentCar.utils.error.InvalidException;
 
-import jakarta.validation.ConstraintViolationException;
-
 @Service
 public class CarModelService {
     private final CarModelRepository carModelRepository;
@@ -57,15 +55,15 @@ public class CarModelService {
 
         Optional<CarModel> cOptional = this.carModelRepository.findById(carModel.getId());
         if (cOptional.isEmpty()) {
-            throw new InvalidException("Validation failed");
+            throw new InvalidException("Tên mẫu xe đã tồn tại");
         }
         CarModel currentCarModel = cOptional.get();
         boolean existsName = this.carModelRepository.existsByName(carModel.getName());
         if (existsName && !currentCarModel.getName().equals(carModel.getName())) {
-            throw new InvalidException("CarModel name đã tồn tại");
+            throw new InvalidException("Tên mẫu xe đã tồn tại");
         }
         if (carModel.getBrand() == null) {
-            throw new InvalidException("Brand không được để trống");
+            throw new InvalidException("Hãng xe không được để trống");
         }
         Brand brand = this.brandService.getBrandById(carModel.getBrand().getId());
         if (brand != null) {

@@ -46,10 +46,10 @@ public class CarService {
     public Car handleUpdateCar(Car car) {
 
         Car existing = carRepository.findById(car.getId())
-                .orElseThrow(() -> new InvalidException("Car không tồn tại"));
+                .orElseThrow(() -> new InvalidException("Xe không tồn tại"));
 
         if (car.getCarModel() == null)
-            throw new InvalidException("CarModel không được để trống");
+            throw new InvalidException("Mẫu xe không được để trống");
         CarModel carModel = this.carModelService.getCarModelById(car.getCarModel().getId());
 
         existing.setCarModel(carModel);
@@ -63,14 +63,14 @@ public class CarService {
 
     public void deleteCar(Long id) {
         Car car = carRepository.findById(id)
-                .orElseThrow(() -> new InvalidException("Car không tồn tại"));
+                .orElseThrow(() -> new InvalidException("Xe không tồn tại"));
 
         this.carRepository.delete(car);
     }
 
     public Car getCarById(Long id) {
         return this.carRepository.findById(id)
-                .orElseThrow(() -> new InvalidException("Car không tồn tại"));
+                .orElseThrow(() -> new InvalidException("Xe không tồn tại"));
     }
 
     public ResultPaginationDTO getCarWithPagination(Pageable pageable) {

@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import com.example.rentCar.utils.SecurityUtils;
 import com.example.rentCar.utils.constant.RentalStatusEnum;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,11 +34,15 @@ public class Rental {
     private long id;
     @Enumerated(EnumType.STRING)
     private RentalStatusEnum status;
+    @NotNull
     private Instant startDate;
+    @NotNull
     private Instant endDate;
-    private double totalPrice;
 
+    private double totalPrice;
+    @NotNull
     private String pickupLocation;
+    @NotNull
     private String dropoffLocation;
 
     private Instant createdAt;

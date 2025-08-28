@@ -2,6 +2,7 @@ package com.example.rentCar.utils;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
+import com.example.rentCar.domain.User;
 import com.example.rentCar.domain.res.ResLogin;
 import com.example.rentCar.utils.constant.TokenType;
 import com.example.rentCar.utils.error.InvalidException;
@@ -40,7 +42,7 @@ public class SecurityUtils {
         this.jwtDecoder = jwtDecoder;
     }
 
-    public String generateJwt(ResLogin.ResUserLogin user, TokenType type) {
+    public String generateJwt(User user, TokenType type) {
         Instant now = Instant.now();
         Instant validity = (type == TokenType.ACCESS) ? now.plus(this.expiresAccesToken, ChronoUnit.SECONDS)
                 : now.plus(this.expiresRefreshToken, ChronoUnit.SECONDS);
@@ -51,7 +53,7 @@ public class SecurityUtils {
                 .subject(user.getEmail());
         if (type == TokenType.ACCESS) {
             claimsBuilder.claim("user", user.getFullName());
-            claimsBuilder.claim("authorities", user.getRole());
+            claimsBuilder.claim("authorities", List.of("ROLE_" + user.getRole().getName().name()));
         } else {
             claimsBuilder.claim("type", "refresh");
         }

@@ -67,8 +67,8 @@ public class AuthController {
                                 currentUser.getId(), currentUser.getEmail(),
                                 currentUser.getFullName(), roleUser);
 
-                String accessToken = this.securityUtils.generateJwt(userLogin, TokenType.ACCESS);
-                String refreshToken = this.securityUtils.generateJwt(userLogin, TokenType.REFRESH);
+                String accessToken = this.securityUtils.generateJwt(currentUser, TokenType.ACCESS);
+                String refreshToken = this.securityUtils.generateJwt(currentUser, TokenType.REFRESH);
 
                 this.userService.handleSaveRefreshToken(refreshToken, currentUser);
                 ResLogin res = new ResLogin(accessToken, userLogin);
@@ -88,7 +88,8 @@ public class AuthController {
 
         @GetMapping("/auth/refresh")
         @ApiMessage("refresh success")
-        public ResponseEntity<ResLogin> getRefresh(@CookieValue("refreshToken") String refreshToken) {
+        public ResponseEntity<ResLogin> getRefresh(
+                        @CookieValue(required = false, name = "refreshToken") String refreshToken) {
 
                 String email = this.securityUtils.extractSubjectFromValidRefreshToken(refreshToken);
                 User currentUser = this.userService.getUserByEmailAndRefreshToken(email, refreshToken);
@@ -100,8 +101,8 @@ public class AuthController {
                                 currentUser.getId(), currentUser.getEmail(),
                                 currentUser.getFullName(), roleUser);
 
-                String accessToken = this.securityUtils.generateJwt(userLogin, TokenType.ACCESS);
-                String newRefreshToken = this.securityUtils.generateJwt(userLogin, TokenType.REFRESH);
+                String accessToken = this.securityUtils.generateJwt(currentUser, TokenType.ACCESS);
+                String newRefreshToken = this.securityUtils.generateJwt(currentUser, TokenType.REFRESH);
 
                 this.userService.handleSaveRefreshToken(newRefreshToken, currentUser);
                 ResLogin res = new ResLogin(accessToken, userLogin);

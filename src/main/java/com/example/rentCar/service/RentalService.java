@@ -36,13 +36,18 @@ public class RentalService {
         Rental res = new Rental();
         res.setCar(car);
         res.setUser(user);
+
         res.setDropoffLocation(rental.getDropoffLocation());
         res.setPickupLocation(rental.getPickupLocation());
         res.setEndDate(rental.getEndDate());
         res.setStartDate(rental.getStartDate());
         res.setStatus(rental.getStatus());
-        res.setTotalPrice(rental.getCar().getPrice());
 
+        if (car != null && rental.getStartDate() != null && rental.getEndDate() != null) {
+            res.setTotalPrice(
+                    (ChronoUnit.DAYS.between(rental.getStartDate(), rental.getEndDate()) + 1)
+                            * car.getPrice());
+        }
         return this.rentalRepository.save(res);
     }
 
@@ -51,7 +56,7 @@ public class RentalService {
                 .orElseThrow(() -> new InvalidException("Rental không tồn tại"));
         if (res.getStatus() == RentalStatusEnum.COMPLETED ||
                 res.getStatus() == RentalStatusEnum.CANCELED) {
-            throw new InvalidException("Không thể sửa rental đã hoàn thành hoặc bị huỷ");
+            throw new InvalidException("Không thể sửa đơn hàng đã hoàn thành hoặc bị huỷ");
         }
         if (rental.getStatus() != null) {
             res.setStatus(rental.getStatus());
@@ -77,12 +82,12 @@ public class RentalService {
 
     public Rental getRentalById(long id) {
         return this.rentalRepository.findById(id)
-                .orElseThrow(() -> new InvalidException("Rental không tồn tại"));
+                .orElseThrow(() -> new InvalidException("Đơn hàng không tồn tại"));
     }
 
     public void deleteRental(long id) {
         Rental rental = rentalRepository.findById(id)
-                .orElseThrow(() -> new InvalidException("Rental không tồn tại"));
+                .orElseThrow(() -> new InvalidException("Đơn hàng không tồn tại"));
 
         if (rental.getStatus() == RentalStatusEnum.COMPLETED) {
             throw new InvalidException("Không thể xóa rental đã hoàn thành");

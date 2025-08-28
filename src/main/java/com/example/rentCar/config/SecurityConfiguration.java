@@ -2,6 +2,7 @@ package com.example.rentCar.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
@@ -58,22 +60,26 @@ public class SecurityConfiguration {
         }
 
         @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                        JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+                String[] whiteList = {
+                                "/", "/api/v1/auth/login", "/api/v1/auth/refresh",
+                                "/storage/**"
+                };
                 http
                                 .csrf(csrf -> csrf.disable())
 
                                 // ------------///
-                                .authorizeHttpRequests(req -> req
-                                                // .requestMatchers("/", "/api/v1/auth/login", "/api/v1/auth/refresh",
-                                                // "/api/v1/register",
-                                                // "/api/v1/users")
-                                                // .permitAll()
-                                                // .anyRequest()
-                                                // .authenticated())
-                                                .anyRequest().permitAll())
+                                .authorizeHttpRequests(req -> req.requestMatchers(whiteList).permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/cars/**").permitAll()
+                                                // .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
+                                                .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
+                                                .anyRequest()
+                                                .authenticated())
+
                                 // -------------- //
                                 .oauth2ResourceServer(oauth2 -> oauth2
-                                                .jwt(Customizer.withDefaults()))
+                                                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
                                 // --------//
                                 .exceptionHandling(exceptions -> exceptions
                                                 .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
