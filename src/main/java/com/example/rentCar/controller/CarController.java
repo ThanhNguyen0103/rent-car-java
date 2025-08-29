@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.rentCar.domain.Car;
 import com.example.rentCar.domain.CarImage;
+import com.example.rentCar.domain.dto.CarCriteriaDTO;
 import com.example.rentCar.domain.res.ResultPaginationDTO;
 import com.example.rentCar.service.CarImageService;
 import com.example.rentCar.service.CarService;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -117,8 +119,9 @@ public class CarController {
 
     @GetMapping("/cars")
     @ApiMessage("Get cars with pagination success")
-    public ResponseEntity<ResultPaginationDTO> getAllCar(Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.carService.getCarWithPagination(pageable));
+    public ResponseEntity<ResultPaginationDTO> getAllCar(Pageable pageable, @ModelAttribute CarCriteriaDTO criteria) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(this.carService.GetCarWithSpecs(criteria, pageable));
     }
 
 }

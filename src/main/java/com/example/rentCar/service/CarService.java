@@ -2,6 +2,7 @@ package com.example.rentCar.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.rentCar.domain.res.ResultPaginationDTO;
@@ -9,8 +10,10 @@ import com.example.rentCar.domain.res.ResultPaginationDTO;
 import com.example.rentCar.domain.Car;
 
 import com.example.rentCar.domain.CarModel;
+import com.example.rentCar.domain.dto.CarCriteriaDTO;
 import com.example.rentCar.repository.CarRepository;
 import com.example.rentCar.utils.error.InvalidException;
+import com.example.rentCar.utils.specification.CarSpecs;
 
 @Service
 public class CarService {
@@ -88,6 +91,28 @@ public class CarService {
         result.setResult(pages.getContent());
         result.setMeta(meta);
         return result;
+    }
+
+    public ResultPaginationDTO GetCarWithSpecs(CarCriteriaDTO car, Pageable pageable) {
+        Specification<Car> specs = Specification.where(CarSpecs.keywordSearch(car.getKeyword()))
+                .or(CarSpecs.hasBrand(car.getBrand()))
+                .or(CarSpecs.hasCarModel(car.getCarModel()))
+                .or(CarSpecs.priceGreaterThanOrEqual(car.getMinPrice()))
+                .or(CarSpecs.priceLessThanOrEqual(car.getMaxPrice()));
+
+        Page<Car> pages = this.carRepository.findAll(specs, pageable);
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
+
+        meta.setCurrentPage(pages.getNumber() + 1);
+        meta.setPageSize(pages.getSize());
+        meta.setPages(pages.getTotalPages());
+        meta.setTotal(pages.getTotalElements());
+
+        result.setResult(pages.getContent());
+        result.setMeta(meta);
+        return result;
+
     }
 
 }

@@ -64,7 +64,7 @@ public class Rental {
         this.createdBy = SecurityUtils.getCurrentUserLogin() != null
                 ? SecurityUtils.getCurrentUserLogin().get()
                 : null;
-        this.status = this.status != null ? this.status : RentalStatusEnum.PENDING;
+        this.status = this.status != null ? this.status : RentalStatusEnum.RESERVED;
     }
 
     @PreUpdate
