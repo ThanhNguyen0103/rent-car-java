@@ -1,6 +1,6 @@
 package com.example.rentCar.domain.dto;
 
-import java.util.Optional;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,8 +14,8 @@ import lombok.Setter;
 public class CarCriteriaDTO {
     private String keyword;
     private String capacity;
-    private String carModel;
-    private String brand;
+    private List<String> carModel;
+    private List<String> brand;
     private Double minPrice;
     private Double maxPrice;
 

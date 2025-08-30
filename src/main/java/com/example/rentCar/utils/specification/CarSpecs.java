@@ -1,5 +1,7 @@
 package com.example.rentCar.utils.specification;
 
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import com.example.rentCar.domain.Brand_;
@@ -8,19 +10,19 @@ import com.example.rentCar.domain.CarModel_;
 import com.example.rentCar.domain.Car_;
 
 public class CarSpecs {
-    public static Specification<Car> hasCarModel(String carModel) {
+    public static Specification<Car> hasCarModel(List<String> carModel) {
         return (root, query, builder) -> {
             if (carModel == null || carModel.isEmpty())
                 return null;
-            return builder.equal(root.get(Car_.CAR_MODEL).get(CarModel_.NAME), carModel);
+            return builder.in(root.get(Car_.CAR_MODEL).get(CarModel_.NAME)).value(carModel);
         };
     }
 
-    public static Specification<Car> hasBrand(String brand) {
+    public static Specification<Car> hasBrand(List<String> brands) {
         return (root, query, builder) -> {
-            if (brand == null || brand.isEmpty())
+            if (brands == null || brands.isEmpty())
                 return null;
-            return builder.equal(root.get(Car_.CAR_MODEL).get(CarModel_.BRAND).get(Brand_.NAME), brand);
+            return builder.in(root.get(Car_.CAR_MODEL).get(CarModel_.BRAND).get(Brand_.NAME)).value(brands);
         };
     }
 
