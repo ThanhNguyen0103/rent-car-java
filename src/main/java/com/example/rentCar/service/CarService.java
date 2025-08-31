@@ -94,11 +94,40 @@ public class CarService {
     }
 
     public ResultPaginationDTO GetCarWithSpecs(CarCriteriaDTO car, Pageable pageable) {
+
         Specification<Car> specs = Specification.where(CarSpecs.keywordSearch(car.getKeyword()))
                 .or(CarSpecs.hasBrand(car.getBrand()))
-                .or(CarSpecs.hasCarModel(car.getCarModel()))
-                .or(CarSpecs.priceGreaterThanOrEqual(car.getMinPrice()))
-                .or(CarSpecs.priceLessThanOrEqual(car.getMaxPrice()));
+                .or(CarSpecs.hasCarModel(car.getCarModel()));
+        // .or(CarSpecs.priceGreaterThanOrEqual(car.getMinPrice()))
+        // .or(CarSpecs.priceLessThanOrEqual(car.getMaxPrice()));
+        if (car.getPrice() != null) {
+            for (String price : car.getPrice()) {
+                double min = 0;
+                double max = 0;
+                switch (price) {
+                    case "duoi-1-trieu":
+                        min = 0;
+                        max = 1000000;
+                        break;
+                    case "tu-1trieu-den-2trieu":
+                        min = 1000001;
+                        max = 2000000;
+                        break;
+                    case "tu-2trieu-den-5trieu":
+                        min = 2000001;
+                        max = 5000000;
+                        break;
+                    case "trên-5trieu":
+                        min = 5000000;
+                        max = 99000000;
+                        break;
+                    default:
+                        break;
+                }
+                specs = specs.or(CarSpecs.priceBetween(min, max));
+
+            }
+        }
 
         Page<Car> pages = this.carRepository.findAll(specs, pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();

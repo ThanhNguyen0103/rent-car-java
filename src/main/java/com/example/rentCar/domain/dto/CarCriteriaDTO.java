@@ -16,7 +16,6 @@ public class CarCriteriaDTO {
     private String capacity;
     private List<String> carModel;
     private List<String> brand;
-    private Double minPrice;
-    private Double maxPrice;
+    private List<String> price;
 
 }

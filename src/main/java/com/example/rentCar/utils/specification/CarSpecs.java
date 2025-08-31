@@ -42,6 +42,15 @@ public class CarSpecs {
         };
     }
 
+    public static Specification<Car> priceBetween(Double minPrice, Double maxPrice) {
+        return (root, query, builder) -> {
+            if (minPrice == null && maxPrice == null)
+                return null;
+
+            return builder.between(root.get(Car_.PRICE), minPrice, maxPrice);
+        };
+    }
+
     public static Specification<Car> keywordSearch(String keyword) {
         return (root, query, builder) -> {
             if (keyword == null || keyword.isEmpty())
