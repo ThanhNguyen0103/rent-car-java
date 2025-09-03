@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.example.rentCar.utils.SecurityUtils;
+import com.example.rentCar.utils.constant.FuelTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -54,6 +55,18 @@ public class Car {
     @ManyToOne
     @JoinColumn(name = "car_model_id")
     private CarModel carModel;
+
+    private String location;
+
+    @NotNull
+    @Min(1970)
+    private int year;
+
+    @NotNull
+    @Min(1)
+    private int mileage;
+    @NotNull
+    private FuelTypeEnum fuelType;
 
     private Instant createdAt;
     private Instant updatedAt;

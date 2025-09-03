@@ -156,7 +156,7 @@ public class AuthController {
                                 .body(null);
         }
 
-        @PostMapping("/register")
+        @PostMapping("/auth/register")
         @ApiMessage("Register success")
         public ResponseEntity<ResLogin.ResUserLogin> postRegister(@RequestBody User user) {
 

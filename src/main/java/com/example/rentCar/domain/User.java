@@ -52,15 +52,15 @@ public class User {
     @NotBlank
     private String password;
 
-    @Min(message = "tuổi từ 18 đến 90", value = 18)
-    @Max(99)
+    // @Min(message = "tuổi từ 18 đến 90", value = 18)
+    // @Max(99)
     private int age;
-    @NotNull
-    @NotBlank
+    // @NotNull
+    // @NotBlank
     private String address;
     private String avatar;
     @Enumerated(EnumType.STRING)
-    @NotNull
+    // @NotNull
     private GenderEnum gender;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String refreshToken;

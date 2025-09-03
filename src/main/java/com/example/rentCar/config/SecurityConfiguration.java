@@ -63,7 +63,7 @@ public class SecurityConfiguration {
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
                         JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
                 String[] whiteList = {
-                                "/", "/api/v1/auth/login", "/api/v1/auth/refresh",
+                                "/", "/api/v1/auth/login", "/api/v1/auth/refresh", "/api/v1/auth/register",
                                 "/storage/**"
                 };
                 http
@@ -72,6 +72,8 @@ public class SecurityConfiguration {
                                 // ------------///
                                 .authorizeHttpRequests(req -> req.requestMatchers(whiteList).permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/cars/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/brands/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/car-models/**").permitAll()
                                                 // .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
                                                 .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
                                                 .anyRequest()

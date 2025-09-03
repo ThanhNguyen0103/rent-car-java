@@ -36,6 +36,10 @@ public class CarService {
         res.setCarModel(carModel);
         res.setDescription(car.getDescription());
         res.setPrice(car.getPrice());
+        res.setFuelType(car.getFuelType());
+        res.setYear(car.getYear());
+        res.setMileage(car.getMileage());
+        res.setLocation(car.getLocation());
         //
         // res.getCarImages()
 
@@ -60,6 +64,10 @@ public class CarService {
         existing.setDescription(car.getDescription());
         existing.setAvailable(car.isAvailable());
         existing.setPrice(car.getPrice());
+        existing.setFuelType(car.getFuelType());
+        existing.setYear(car.getYear());
+        existing.setMileage(car.getMileage());
+        existing.setLocation(car.getLocation());
 
         return this.carRepository.save(existing);
     }
@@ -101,32 +109,38 @@ public class CarService {
         // .or(CarSpecs.priceGreaterThanOrEqual(car.getMinPrice()))
         // .or(CarSpecs.priceLessThanOrEqual(car.getMaxPrice()));
         if (car.getPrice() != null) {
+            Specification<Car> priceSpecs = null;
             for (String price : car.getPrice()) {
                 double min = 0;
                 double max = 0;
                 switch (price) {
-                    case "duoi-1-trieu":
+                    case "0-45":
                         min = 0;
-                        max = 1000000;
+                        max = 45;
                         break;
-                    case "tu-1trieu-den-2trieu":
-                        min = 1000001;
-                        max = 2000000;
+                    case "46-65":
+                        min = 46;
+                        max = 65;
                         break;
-                    case "tu-2trieu-den-5trieu":
-                        min = 2000001;
-                        max = 5000000;
+                    case "66-110":
+                        min = 66;
+                        max = 110;
                         break;
-                    case "trên-5trieu":
-                        min = 5000000;
-                        max = 99000000;
+                    case "111-999":
+                        min = 111;
+                        max = 999;
                         break;
                     default:
                         break;
                 }
-                specs = specs.or(CarSpecs.priceBetween(min, max));
+                Specification<Car> priceSpec = CarSpecs.priceBetween(min, max);
+                priceSpecs = (priceSpecs == null) ? priceSpec : priceSpecs.or(priceSpec);
 
             }
+            if (priceSpecs != null) {
+                specs = specs.and(priceSpecs); // dùng and để filter chặt chẽ
+            }
+
         }
 
         Page<Car> pages = this.carRepository.findAll(specs, pageable);
